@@ -12,11 +12,26 @@ app.use(express.urlencoded({extended: true}));
 app.use(express.static('public'));
 
 app.get('/', (req, res) =>
-res.sendFile(path.join(__dirname, 'public/index.html'))
+res.sendFile(path.join(__dirname, '/public/index.html'))
 );
 
+
+
+/*
+  Any time you neded to access the data:
+    do fs.readFile then use JSON.parse()
+
+  =====  working w/ real data ========
+
+  Anytime you need to update the file:
+    stringify the data first 
+    them use fs.writeFile()
+
+*/
+
+
 app.get("/notes", (req, res) => {
-  res.sendFile(path.join(__dirname, 'public/notes.html'))
+  res.sendFile(path.join(__dirname, '/public/notes.html'))
 })
 
 app.get("/api/notes", (req, res) => {
@@ -24,18 +39,21 @@ app.get("/api/notes", (req, res) => {
 })
 
 app.post("/api/notes", (req, res) => {
-  fs.readFile("./db/db.json", "utf-8", (err, data) => {
-    const dataObj = JSON.parse(data)
-    let noteModel= {
-      title: req.body.title,
-      text: req.body.text
-    }
-    dataObj.push(noteModel)
-    fs.writeFileSync("./db/db.json", JSON.stringify(dataObj))
-    res.json(dataObj)
-  })
+  let noteModel ={
+    title: req.body.title,
+    text:req.body.text
+  }
+  
+  database.push(noteModel)
 
+  fs.writeFileSync("./db/db.json", JSON.stringify(database))
+
+  res.json(datebase)
 })
+
+app.get('feedback', (req, res) =>
+  res.sendFile(path.join(__dirname, '/public/pages/feedback.html'))
+);
 
 app.listen(PORT, () =>
   console.log(`App listening at http://localhost:${PORT}`)
